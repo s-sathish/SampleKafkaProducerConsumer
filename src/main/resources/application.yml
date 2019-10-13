@@ -1,0 +1,23 @@
+server:
+  port: 8090
+  servlet:
+    contextPath: /kpc
+
+spring:
+  cloud:
+    stream:
+      bindings:
+        in:
+          destination: producer-consumer-topic
+          group: producer-consumer-group
+        out:
+          destination: producer-consumer-topic
+      kafka:
+        binder:
+          brokers: localhost:9092
+        bindings:
+          in:
+            consumer:
+              enableDlq: true
+              dlqName: producer-consumer-topic-error
+              autoCommitOnError: true
