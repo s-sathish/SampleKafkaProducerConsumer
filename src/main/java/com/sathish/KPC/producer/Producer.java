@@ -26,8 +26,7 @@ public class Producer {
         MessageChannel messageChannel = stream.outboundProducer();
 
         try {
-            boolean producerSuccess = messageChannel.send(MessageBuilder.withPayload(producerData)
-                    .build());
+            boolean producerSuccess = messageChannel.send(MessageBuilder.withPayload(producerData).build());
 
             if(producerSuccess)
                 log.info("Sent message event to Kafka broker");
@@ -35,8 +34,7 @@ public class Producer {
                 log.error("Failed sending message event to Kafka broker, message = {}", producerData);
             }
         } catch (RuntimeException ex) {
-            log.error("Failed(RuntimeException) sending message event to Kafka broker, RuntimeException = {}",
-                    ex.getMessage());
+            log.error("Failed(RuntimeException) sending message event to Kafka broker, RuntimeException = {}", ex.getMessage());
         }
     }
 
@@ -60,8 +58,7 @@ public class Producer {
                 log.error("Failed sending(To DLQ) message event to Kafka broker, message = {}", producerData);
             }
         } catch (RuntimeException ex) {
-            log.error("Failed(RuntimeException) sending(To DLQ) message event to Kafka broker, RuntimeException = {}",
-                    ex.getMessage());
+            log.error("Failed(RuntimeException) sending(To DLQ) message event to Kafka broker, RuntimeException = {}", ex.getMessage());
         }
     }
 }

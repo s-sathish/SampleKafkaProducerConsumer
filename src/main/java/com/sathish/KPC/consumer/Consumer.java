@@ -38,11 +38,9 @@ public class Consumer {
         log.info("Finished processing message event from consumer, message = {}", consumerData);
 
         if(messageProcessingResult) {
-            log.info("Successfully processed message event from consumer, so committing the offset message = {}",
-                    consumerData);
+            log.info("Successfully processed message event from consumer, so committing the offset message = {}", consumerData);
         } else {
-            log.warn("Failure in processing message event from consumer, so pushing the message to DLQ = {}",
-                    consumerData);
+            log.warn("Failure in processing message event from consumer, so pushing the message to DLQ = {}", consumerData);
 
             ProducerData dlqProducerData = new ProducerData();
             dlqProducerData.setPayload(consumerData.getPayload().getPayload());
