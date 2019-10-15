@@ -43,7 +43,7 @@ public class DLQConsumer {
     }
 
     @Bean
-    public ApplicationListener<ListenerContainerIdleEvent> wakingUpAfterOneMinute() {
+    public ApplicationListener<ListenerContainerIdleEvent> wakingUpAllDLQConsumerAsPerRetryLogic() {
         return event -> {
             Collection<TopicPartition> topicPartitions = event.getTopicPartitions();
             for(TopicPartition topicPartition : topicPartitions) {
