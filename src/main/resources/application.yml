@@ -12,10 +12,15 @@ spring:
           group: producer-consumer-group
         out:
           destination: producer-consumer-topic
-        dlq-out:
-          destination: producer-consumer-topic-dlq
-        dlq-in:
-          destination: producer-consumer-topic-dlq
+        dlq-out-1:
+          destination: producer-consumer-topic-dlq-1
+        dlq-out-2:
+          destination: producer-consumer-topic-dlq-2
+        dlq-in-1:
+          destination: producer-consumer-topic-dlq-1
+          group: producer-consumer-group-dlq
+        dlq-in-2:
+          destination: producer-consumer-topic-dlq-2
           group: producer-consumer-group-dlq
       kafka:
         binder:
@@ -24,7 +29,13 @@ spring:
           in:
             consumer:
               autoCommitOffset: false
-          dlq-in:
+          dlq-in-1:
+            consumer:
+              idleEventInterval: 30000
+              autoCommitOffset: true
+              enableDlq: true
+              dlqName: producer-consumer-topic-error
+          dlq-in-2:
             consumer:
               idleEventInterval: 60000
               autoCommitOffset: true

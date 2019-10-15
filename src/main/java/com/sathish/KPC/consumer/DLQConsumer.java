@@ -18,20 +18,28 @@ import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Collections;
 
-import static com.sathish.KPC.utils.Constants.DLQ_TOPIC_NAME;
-import static com.sathish.KPC.utils.Constants.DLQ_TOPIC_PARTITION;
+import static com.sathish.KPC.utils.Constants.*;
 
 @Component
 @Log4j2
 public class DLQConsumer {
 
-    @StreamListener(value = Stream.DLQ_CONSUME)
-    public void messageConsumerDLQ(@Valid Message<ConsumerData> consumerData, @Header(KafkaHeaders.CONSUMER) Consumer<?, ?> consumer) {
-        log.info("DLQ message consumer Info = {}", consumer);
+    @StreamListener(value = Stream.DLQ_CONSUME_1)
+    public void messageConsumer1DLQ(@Valid Message<ConsumerData> consumerData, @Header(KafkaHeaders.CONSUMER) Consumer<?, ?> consumer) {
+        log.info("DLQ 1 message consumer Info = {}", consumer);
 
-        log.info("Received(From DLQ) message event in consumer, message = {}", consumerData);
+        log.info("Received(From DLQ 1) message event in consumer, message = {}", consumerData);
 
-        consumer.pause(Collections.singleton(new TopicPartition(DLQ_TOPIC_NAME, DLQ_TOPIC_PARTITION)));
+        consumer.pause(Collections.singleton(new TopicPartition(DLQ_TOPIC_NAME_1, DLQ_TOPIC_PARTITION)));
+    }
+
+    @StreamListener(value = Stream.DLQ_CONSUME_2)
+    public void messageConsumer2DLQ(@Valid Message<ConsumerData> consumerData, @Header(KafkaHeaders.CONSUMER) Consumer<?, ?> consumer) {
+        log.info("DLQ 2 message consumer Info = {}", consumer);
+
+        log.info("Received(From DLQ 2) message event in consumer, message = {}", consumerData);
+
+        consumer.pause(Collections.singleton(new TopicPartition(DLQ_TOPIC_NAME_2, DLQ_TOPIC_PARTITION)));
     }
 
     @Bean
@@ -39,8 +47,9 @@ public class DLQConsumer {
         return event -> {
             Collection<TopicPartition> topicPartitions = event.getTopicPartitions();
             for(TopicPartition topicPartition : topicPartitions) {
-                if(topicPartition.toString().equals(DLQ_TOPIC_NAME + "-" + DLQ_TOPIC_PARTITION)) {
-                    log.info("Resuming the DLQ Consumer after one minute, event = {}", event);
+                if(topicPartition.toString().equals(DLQ_TOPIC_NAME_1 + "-" + DLQ_TOPIC_PARTITION)
+                        || topicPartition.toString().equals(DLQ_TOPIC_NAME_2 + "-" + DLQ_TOPIC_PARTITION)) {
+                    log.info("Resuming the DLQ Consumers as per each topic logic's, event = {}", event);
 
                     if(event.getConsumer().paused().size() > 0) {
                         log.info("Found new events in DLQ. Waking up and gonna process the messages...");

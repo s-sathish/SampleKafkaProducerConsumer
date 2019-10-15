@@ -46,13 +46,16 @@ public class Producer {
     public void messageProducerToDLQ(ProducerData producerData) throws RuntimeException {
         log.info("Producing(To DLQ) message event to Kafka broker, message = {}", producerData);
 
-        MessageChannel messageChannel = stream.outboundDLQProducer();
+        MessageChannel messageChannel1 = stream.outboundDLQProducer1();
+        MessageChannel messageChannel2 = stream.outboundDLQProducer2();
 
         try {
-            boolean producerSuccess = messageChannel.send(MessageBuilder.withPayload(producerData)
+            boolean producerSuccess1 = messageChannel1.send(MessageBuilder.withPayload(producerData)
+                    .build());
+            boolean producerSuccess2 = messageChannel2.send(MessageBuilder.withPayload(producerData)
                     .build());
 
-            if(producerSuccess)
+            if(producerSuccess1 && producerSuccess2)
                 log.info("Sent(To DLQ) message event to Kafka broker");
             else {
                 log.error("Failed sending(To DLQ) message event to Kafka broker, message = {}", producerData);

@@ -9,6 +9,7 @@ public class Constants {
     /**
      * DLQ properties
      */
-    public final static String  DLQ_TOPIC_NAME      = "producer-consumer-topic-dlq";
+    public final static String  DLQ_TOPIC_NAME_1    = "producer-consumer-topic-dlq-1";
+    public final static String  DLQ_TOPIC_NAME_2    = "producer-consumer-topic-dlq-2";
     public final static Integer DLQ_TOPIC_PARTITION = 0;
 }
