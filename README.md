@@ -1,3 +1,4 @@
-# SampleKafkaProducerConsumer + DLQ Play
+# SampleKafkaProducerConsumer + DLQ Play + Multiple binders
 Sample Kafka Producer Consumer Application in Spring Boot.
-Playing with DLQ
+1. Playing with DLQ
+2. Working with multiple kafka binders
