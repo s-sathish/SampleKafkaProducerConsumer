@@ -47,8 +47,8 @@ public class DLQConsumer {
         return event -> {
             Collection<TopicPartition> topicPartitions = event.getTopicPartitions();
             for(TopicPartition topicPartition : topicPartitions) {
-                if(topicPartition.toString().equals(DLQ_TOPIC_NAME_1 + "-" + DLQ_TOPIC_PARTITION)
-                        || topicPartition.toString().equals(DLQ_TOPIC_NAME_2 + "-" + DLQ_TOPIC_PARTITION)) {
+                if(topicPartition.toString().equals(DLQ_TOPIC_NAME_1_PARTITION)
+                        || topicPartition.toString().equals(DLQ_TOPIC_NAME_2_PARTITION)) {
                     log.info("Resuming the DLQ Consumers as per each topic logic's, event = {}", event);
 
                     if(event.getConsumer().paused().size() > 0) {

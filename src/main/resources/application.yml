@@ -10,34 +10,51 @@ spring:
         in:
           destination: producer-consumer-topic
           group: producer-consumer-group
+          binder: kafka1
         out:
           destination: producer-consumer-topic
+          binder: kafka1
         dlq-out-1:
           destination: producer-consumer-topic-dlq-1
+          binder: kafka2
         dlq-out-2:
           destination: producer-consumer-topic-dlq-2
+          binder: kafka2
         dlq-in-1:
           destination: producer-consumer-topic-dlq-1
           group: producer-consumer-group-dlq
+          binder: kafka2
         dlq-in-2:
           destination: producer-consumer-topic-dlq-2
           group: producer-consumer-group-dlq
+          binder: kafka2
+      binders:
+        kafka1:
+          type: kafka
+          environment:
+            spring.cloud.stream.kafka.binder.brokers: localhost:9092
+            spring.cloud.stream.kafka.binder.zkNodes: localhost:2181
+        kafka2:
+          type: kafka
+          environment:
+            spring.cloud.stream.kafka.binder.brokers: localhost:9093
+            spring.cloud.stream.kafka.binder.zkNodes: localhost:2182
       kafka:
         binder:
-          brokers: localhost:9092
+          health-timeout: 60
         bindings:
           in:
             consumer:
               autoCommitOffset: false
           dlq-in-1:
             consumer:
-              idleEventInterval: 30000
+              idleEventInterval: 10000
               autoCommitOffset: true
               enableDlq: true
               dlqName: producer-consumer-topic-error
           dlq-in-2:
             consumer:
-              idleEventInterval: 60000
+              idleEventInterval: 15000
               autoCommitOffset: true
               enableDlq: true
               dlqName: producer-consumer-topic-error
