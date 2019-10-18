@@ -58,3 +58,7 @@ spring:
               autoCommitOffset: true
               enableDlq: true
               dlqName: producer-consumer-topic-error
+
+logging:
+  level:
+    org.springframework.integration: TRACE
