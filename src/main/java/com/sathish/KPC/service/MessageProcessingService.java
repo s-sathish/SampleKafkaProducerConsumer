@@ -7,6 +7,6 @@ public class MessageProcessingService implements IMessageProcessingService {
 
     @Override
     public boolean processMessage(String message) {
-        return false; // Set this to false to test the DLQ mechanism
+        return true; // Set this to false to test the DLQ mechanism
     }
 }

@@ -8,23 +8,38 @@ spring:
     stream:
       bindings:
         in:
+          consumer:
+            partitioned: true
           destination: producer-consumer-topic
           group: producer-consumer-group
           binder: kafka1
         out:
+          producer:
+            partitionKeyExpression: payload.payload
+            partitionCount: 2
           destination: producer-consumer-topic
           binder: kafka1
         dlq-out-1:
+          producer:
+            partitionKeyExpression: payload.payload
+            partitionCount: 2
           destination: producer-consumer-topic-dlq-1
           binder: kafka2
         dlq-out-2:
+          producer:
+            partitionKeyExpression: payload.payload
+            partitionCount: 2
           destination: producer-consumer-topic-dlq-2
           binder: kafka2
         dlq-in-1:
+          consumer:
+            partitioned: true
           destination: producer-consumer-topic-dlq-1
           group: producer-consumer-group-dlq
           binder: kafka2
         dlq-in-2:
+          consumer:
+            partitioned: true
           destination: producer-consumer-topic-dlq-2
           group: producer-consumer-group-dlq
           binder: kafka2
@@ -50,13 +65,13 @@ spring:
               autoCommitOffset: false
           dlq-in-1:
             consumer:
-              idleEventInterval: 10000
+              idleEventInterval: 60000
               autoCommitOffset: true
               enableDlq: true
               dlqName: producer-consumer-topic-error
           dlq-in-2:
             consumer:
-              idleEventInterval: 15000
+              idleEventInterval: 120000
               autoCommitOffset: true
               enableDlq: true
               dlqName: producer-consumer-topic-error

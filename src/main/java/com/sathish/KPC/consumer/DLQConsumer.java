@@ -30,7 +30,8 @@ public class DLQConsumer {
 
         log.info("Received(From DLQ 1) message event in consumer, message = {}", consumerData);
 
-        consumer.pause(Collections.singleton(new TopicPartition(DLQ_TOPIC_NAME_1, DLQ_TOPIC_PARTITION)));
+        for(int i = 0; i < DLQ_TOPIC_TOTAL_PARTITION; i++)
+            consumer.pause(Collections.singleton(new TopicPartition(DLQ_TOPIC_NAME_1, i)));
     }
 
     @StreamListener(value = Stream.DLQ_CONSUME_2)
@@ -39,7 +40,8 @@ public class DLQConsumer {
 
         log.info("Received(From DLQ 2) message event in consumer, message = {}", consumerData);
 
-        consumer.pause(Collections.singleton(new TopicPartition(DLQ_TOPIC_NAME_2, DLQ_TOPIC_PARTITION)));
+        for(int i = 0; i < DLQ_TOPIC_TOTAL_PARTITION; i++)
+            consumer.pause(Collections.singleton(new TopicPartition(DLQ_TOPIC_NAME_2, i)));
     }
 
     @Bean
@@ -47,8 +49,7 @@ public class DLQConsumer {
         return event -> {
             Collection<TopicPartition> topicPartitions = event.getTopicPartitions();
             for(TopicPartition topicPartition : topicPartitions) {
-                if(topicPartition.toString().equals(DLQ_TOPIC_NAME_1_PARTITION)
-                        || topicPartition.toString().equals(DLQ_TOPIC_NAME_2_PARTITION)) {
+                if(DLQ_TOPIC_PARTITION_MAP.containsKey(topicPartition.toString())) {
                     log.info("Resuming the DLQ Consumers as per each topic logic's, event = {}", event);
 
                     if(event.getConsumer().paused().size() > 0) {
