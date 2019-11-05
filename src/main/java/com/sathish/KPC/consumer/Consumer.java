@@ -26,16 +26,16 @@ public class Consumer {
     @Autowired
     private Producer producer;
 
-    @StreamListener(value = Stream.INPUT)
-    public void messageConsumer(@Valid Message<ConsumerData> consumerData, @Header(KafkaHeaders.CONSUMER) org.apache.kafka.clients.consumer.Consumer<?, ?> consumer) {
-        log.info("Message Consumer Info = {}", consumer);
+    @StreamListener(value = Stream.INPUT_1)
+    public void messageConsumer1(@Valid Message<ConsumerData> consumerData, @Header(KafkaHeaders.CONSUMER) org.apache.kafka.clients.consumer.Consumer<?, ?> consumer) {
+        log.info("Message Consumer 1 Info = {}", consumer);
 
-        log.info("Received message event in consumer, message = {}", consumerData);
+        log.info("Received message event in consumer1, message = {}", consumerData);
 
-        log.info("Processing message event from consumer, message = {}", consumerData);
+        log.info("Processing message event from consumer1, message = {}", consumerData);
         boolean messageProcessingResult = messageProcessingService.processMessage(consumerData.getPayload().getPayload());
 
-        log.info("Finished processing message event from consumer, message = {}", consumerData);
+        log.info("Finished processing message event from consumer1, message = {}", consumerData);
 
         if(messageProcessingResult) {
             log.info("Successfully processed message event from consumer, so committing the offset message = {}", consumerData);
@@ -48,6 +48,23 @@ public class Consumer {
             producer.messageProducerToDLQ(dlqProducerData);
         }
 
+        ackEvent(consumerData);
+    }
+
+    @StreamListener(value = Stream.INPUT_2)
+    public void messageConsumer2(@Valid Message<ConsumerData> consumerData, @Header(KafkaHeaders.CONSUMER) org.apache.kafka.clients.consumer.Consumer<?, ?> consumer) {
+        log.info("Message Consumer 2 Info = {}", consumer);
+
+        log.info("Received message event in consumer2, message = {}", consumerData);
+
+        log.info("Processing message event from consumer2, message = {}", consumerData);
+
+        log.info("Finished processing message event from consumer2, message = {}", consumerData);
+
+        ackEvent(consumerData);
+    }
+
+    private void ackEvent(@Valid Message<ConsumerData> consumerData) {
         Acknowledgment acknowledgment= consumerData.getHeaders().get(KafkaHeaders.ACKNOWLEDGMENT, Acknowledgment.class);
         if(acknowledgment != null) {
             log.info("Acknowledgement is {} for message = {}", acknowledgment, consumerData);

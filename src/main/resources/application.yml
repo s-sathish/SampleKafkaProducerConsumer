@@ -7,13 +7,7 @@ spring:
   cloud:
     stream:
       bindings:
-        in:
-          consumer:
-            partitioned: true
-          destination: producer-consumer-topic
-          group: producer-consumer-group
-          binder: kafka1
-        out:
+        out-1:
           producer:
             partitionKeyExpression: payload.payload
             partitionCount: 2
@@ -31,6 +25,18 @@ spring:
             partitionCount: 2
           destination: producer-consumer-topic-dlq-2
           binder: kafka2
+        in-1:
+          consumer:
+            partitioned: true
+          destination: producer-consumer-topic
+          group: producer-consumer-group-1
+          binder: kafka1
+        in-2:
+          consumer:
+            partitioned: true
+          destination: producer-consumer-topic
+          group: producer-consumer-group-2
+          binder: kafka1
         dlq-in-1:
           consumer:
             partitioned: true
@@ -60,18 +66,21 @@ spring:
         binder:
           health-timeout: 60
         bindings:
-          in:
+          in-1:
+            consumer:
+              autoCommitOffset: false
+          in-2:
             consumer:
               autoCommitOffset: false
           dlq-in-1:
             consumer:
-              idleEventInterval: 60000
+              idleEventInterval: 1800000
               autoCommitOffset: true
               enableDlq: true
               dlqName: producer-consumer-topic-error
           dlq-in-2:
             consumer:
-              idleEventInterval: 120000
+              idleEventInterval: 3600000
               autoCommitOffset: true
               enableDlq: true
               dlqName: producer-consumer-topic-error

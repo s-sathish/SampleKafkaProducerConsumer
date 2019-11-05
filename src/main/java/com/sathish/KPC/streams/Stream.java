@@ -9,8 +9,9 @@ public interface Stream {
     /**
      * Main producer, consumer
      */
-    String INPUT = "in";
-    String OUTPUT = "out";
+    String INPUT_1  = "in-1";
+    String INPUT_2  = "in-2";
+    String OUTPUT_1 = "out-1";
 
     /**
      * DLQ Producer stream
@@ -24,11 +25,14 @@ public interface Stream {
     String DLQ_CONSUME_1 = "dlq-in-1";
     String DLQ_CONSUME_2 = "dlq-in-2";
 
-    @Input(INPUT)
-    SubscribableChannel inboundConsumer();
+    @Input(INPUT_1)
+    SubscribableChannel inboundConsumer1();
 
-    @Output(OUTPUT)
-    MessageChannel outboundProducer();
+    @Input(INPUT_2)
+    SubscribableChannel inboundConsumer2();
+
+    @Output(OUTPUT_1)
+    MessageChannel outboundProducer1();
 
     @Output(DLQ_PRODUCE_1)
     MessageChannel outboundDLQProducer1();

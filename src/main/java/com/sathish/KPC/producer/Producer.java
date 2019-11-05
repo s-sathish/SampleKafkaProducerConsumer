@@ -23,7 +23,7 @@ public class Producer {
     public void messageProducer(ProducerData producerData) throws RuntimeException {
         log.info("Producing message event to Kafka broker, message = {}", producerData);
 
-        MessageChannel messageChannel = stream.outboundProducer();
+        MessageChannel messageChannel = stream.outboundProducer1();
 
         try {
             boolean producerSuccess = messageChannel.send(MessageBuilder.withPayload(producerData).build());
