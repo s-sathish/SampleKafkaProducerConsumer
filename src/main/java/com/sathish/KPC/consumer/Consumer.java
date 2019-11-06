@@ -33,7 +33,7 @@ public class Consumer {
         log.info("Received message event in consumer1, message = {}", consumerData);
 
         log.info("Processing message event from consumer1, message = {}", consumerData);
-        boolean messageProcessingResult = messageProcessingService.processMessage(consumerData.getPayload().getPayload());
+        boolean messageProcessingResult = processMessage(consumerData.getPayload().getPayload());
 
         log.info("Finished processing message event from consumer1, message = {}", consumerData);
 
@@ -42,10 +42,7 @@ public class Consumer {
         } else {
             log.warn("Failure in processing message event from consumer, so pushing the message to DLQ = {}", consumerData);
 
-            ProducerData dlqProducerData = new ProducerData();
-            dlqProducerData.setPayload(consumerData.getPayload().getPayload());
-
-            producer.messageProducerToDLQ(dlqProducerData);
+            produceMessageToDLQ(consumerData.getPayload());
         }
 
         ackEvent(consumerData);
@@ -62,6 +59,21 @@ public class Consumer {
         log.info("Finished processing message event from consumer2, message = {}", consumerData);
 
         ackEvent(consumerData);
+    }
+
+    private boolean processMessage(String payload) {
+        return messageProcessingService.processMessage(payload);
+    }
+
+    private void produceMessageToDLQ(ConsumerData consumerData) {
+        producer.messageProducerToDLQ(prepareDlqProducerData(consumerData));
+    }
+
+    private ProducerData prepareDlqProducerData(ConsumerData consumerData) {
+        ProducerData dlqProducerData = new ProducerData();
+        dlqProducerData.setPayload(consumerData.getPayload());
+
+        return dlqProducerData;
     }
 
     private void ackEvent(@Valid Message<ConsumerData> consumerData) {

@@ -26,11 +26,19 @@ public class Api {
     public ResponseEntity<ResponseData> handleApiRequest(final @RequestBody ApiRequest apiRequest) {
         log.info("Received API request = {}", apiRequest);
 
+        produceMessage(prepareProducerData(apiRequest));
+
+        return new ResponseEntity<>(ResponseData.builder().status(API_SUCCESS_RESPONSE_MESSAGE).build(), HttpStatus.OK);
+    }
+
+    private void produceMessage(ProducerData producerData) {
+        producer.messageProducer(producerData);
+    }
+
+    private ProducerData prepareProducerData(ApiRequest apiRequest) {
         ProducerData producerData = new ProducerData();
         producerData.setPayload(apiRequest.getData());
 
-        producer.messageProducer(producerData);
-
-        return new ResponseEntity<>(ResponseData.builder().status(API_SUCCESS_RESPONSE_MESSAGE).build(), HttpStatus.OK);
+        return producerData;
     }
 }

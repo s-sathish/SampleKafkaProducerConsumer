@@ -26,7 +26,7 @@ public class Producer {
         MessageChannel messageChannel = stream.outboundProducer1();
 
         try {
-            boolean producerSuccess = messageChannel.send(MessageBuilder.withPayload(producerData).build());
+            boolean producerSuccess = sendMessage(messageChannel, producerData);
 
             if(producerSuccess)
                 log.info("Sent message event to Kafka broker");
@@ -50,10 +50,8 @@ public class Producer {
         MessageChannel messageChannel2 = stream.outboundDLQProducer2();
 
         try {
-            boolean producerSuccess1 = messageChannel1.send(MessageBuilder.withPayload(producerData)
-                    .build());
-            boolean producerSuccess2 = messageChannel2.send(MessageBuilder.withPayload(producerData)
-                    .build());
+            boolean producerSuccess1 = sendMessage(messageChannel1, producerData);
+            boolean producerSuccess2 = sendMessage(messageChannel2, producerData);
 
             if(producerSuccess1 && producerSuccess2)
                 log.info("Sent(To DLQ) message event to Kafka broker");
@@ -63,5 +61,9 @@ public class Producer {
         } catch (RuntimeException ex) {
             log.error("Failed(RuntimeException) sending(To DLQ) message event to Kafka broker, RuntimeException = {}", ex.getMessage());
         }
+    }
+
+    private boolean sendMessage(MessageChannel messageChannel, ProducerData producerData) {
+        return messageChannel.send(MessageBuilder.withPayload(producerData).build());
     }
 }
