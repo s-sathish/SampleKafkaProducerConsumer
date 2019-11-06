@@ -2,14 +2,14 @@ package com.sathish.KPC.producer;
 
 import com.sathish.KPC.data.ProducerData;
 import com.sathish.KPC.streams.Stream;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
+import static com.sathish.KPC.utils.LoggingUtils.*;
+
 @Service
-@Log4j2
 public class Producer {
 
     @Autowired
@@ -21,7 +21,7 @@ public class Producer {
      * @throws RuntimeException RuntimeException
      */
     public void messageProducer(ProducerData producerData) throws RuntimeException {
-        log.info("Producing message event to Kafka broker, message = {}", producerData);
+        doLogInfoWithMessageAndObject("Producing message event to Kafka broker, message = {}", producerData);
 
         MessageChannel messageChannel = stream.outboundProducer1();
 
@@ -29,12 +29,12 @@ public class Producer {
             boolean producerSuccess = sendMessage(messageChannel, producerData);
 
             if(producerSuccess)
-                log.info("Sent message event to Kafka broker");
+                doLogInfoWithMessage("Sent message event to Kafka broker");
             else {
-                log.error("Failed sending message event to Kafka broker, message = {}", producerData);
+                doLogErrorWithMessageAndObject("Failed sending message event to Kafka broker, message = {}", producerData);
             }
         } catch (RuntimeException ex) {
-            log.error("Failed(RuntimeException) sending message event to Kafka broker, RuntimeException = {}", ex.getMessage());
+            doLogErrorWithMessageAndObject("Failed(RuntimeException) sending message event to Kafka broker, RuntimeException = {}", ex.getMessage());
         }
     }
 
@@ -44,7 +44,7 @@ public class Producer {
      * @throws RuntimeException RuntimeException
      */
     public void messageProducerToDLQ(ProducerData producerData) throws RuntimeException {
-        log.info("Producing(To DLQ) message event to Kafka broker, message = {}", producerData);
+        doLogInfoWithMessageAndObject("Producing(To DLQ) message event to Kafka broker, message = {}", producerData);
 
         MessageChannel messageChannel1 = stream.outboundDLQProducer1();
         MessageChannel messageChannel2 = stream.outboundDLQProducer2();
@@ -54,12 +54,12 @@ public class Producer {
             boolean producerSuccess2 = sendMessage(messageChannel2, producerData);
 
             if(producerSuccess1 && producerSuccess2)
-                log.info("Sent(To DLQ) message event to Kafka broker");
+                doLogInfoWithMessage("Sent(To DLQ) message event to Kafka broker");
             else {
-                log.error("Failed sending(To DLQ) message event to Kafka broker, message = {}", producerData);
+                doLogErrorWithMessageAndObject("Failed sending(To DLQ) message event to Kafka broker, message = {}", producerData);
             }
         } catch (RuntimeException ex) {
-            log.error("Failed(RuntimeException) sending(To DLQ) message event to Kafka broker, RuntimeException = {}", ex.getMessage());
+            doLogErrorWithMessageAndObject("Failed(RuntimeException) sending(To DLQ) message event to Kafka broker, RuntimeException = {}", ex.getMessage());
         }
     }
 

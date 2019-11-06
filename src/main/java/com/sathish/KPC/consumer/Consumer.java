@@ -5,7 +5,6 @@ import com.sathish.KPC.data.ProducerData;
 import com.sathish.KPC.producer.Producer;
 import com.sathish.KPC.service.MessageProcessingService;
 import com.sathish.KPC.streams.Stream;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -16,8 +15,9 @@ import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
 
+import static com.sathish.KPC.utils.LoggingUtils.*;
+
 @Component
-@Log4j2
 public class Consumer {
 
     @Autowired
@@ -28,20 +28,18 @@ public class Consumer {
 
     @StreamListener(value = Stream.INPUT_1)
     public void messageConsumer1(@Valid Message<ConsumerData> consumerData, @Header(KafkaHeaders.CONSUMER) org.apache.kafka.clients.consumer.Consumer<?, ?> consumer) {
-        log.info("Message Consumer 1 Info = {}", consumer);
+        doLogInfoWithMessageAndObject("Message Consumer 1 Info = {}", consumer);
+        doLogInfoWithMessageAndObject("Received message event in consumer1, message = {}", consumerData);
 
-        log.info("Received message event in consumer1, message = {}", consumerData);
-
-        log.info("Processing message event from consumer1, message = {}", consumerData);
+        doLogInfoWithMessageAndObject("Processing message event from consumer1, message = {}", consumerData);
         boolean messageProcessingResult = processMessage(consumerData.getPayload().getPayload());
 
-        log.info("Finished processing message event from consumer1, message = {}", consumerData);
+        doLogInfoWithMessageAndObject("Finished processing message event from consumer1, message = {}", consumerData);
 
         if(messageProcessingResult) {
-            log.info("Successfully processed message event from consumer, so committing the offset message = {}", consumerData);
+            doLogInfoWithMessageAndObject("Successfully processed message event from consumer, so committing the offset message = {}", consumerData);
         } else {
-            log.warn("Failure in processing message event from consumer, so pushing the message to DLQ = {}", consumerData);
-
+            doLogWarnWithMessageAndObject("Failure in processing message event from consumer, so pushing the message to DLQ = {}", consumerData);
             produceMessageToDLQ(consumerData.getPayload());
         }
 
@@ -50,13 +48,10 @@ public class Consumer {
 
     @StreamListener(value = Stream.INPUT_2)
     public void messageConsumer2(@Valid Message<ConsumerData> consumerData, @Header(KafkaHeaders.CONSUMER) org.apache.kafka.clients.consumer.Consumer<?, ?> consumer) {
-        log.info("Message Consumer 2 Info = {}", consumer);
-
-        log.info("Received message event in consumer2, message = {}", consumerData);
-
-        log.info("Processing message event from consumer2, message = {}", consumerData);
-
-        log.info("Finished processing message event from consumer2, message = {}", consumerData);
+        doLogInfoWithMessageAndObject("Message Consumer 2 Info = {}", consumer);
+        doLogInfoWithMessageAndObject("Received message event in consumer2, message = {}", consumerData);
+        doLogInfoWithMessageAndObject("Processing message event from consumer2, message = {}", consumerData);
+        doLogInfoWithMessageAndObject("Finished processing message event from consumer2, message = {}", consumerData);
 
         ackEvent(consumerData);
     }
@@ -79,11 +74,11 @@ public class Consumer {
     private void ackEvent(@Valid Message<ConsumerData> consumerData) {
         Acknowledgment acknowledgment= consumerData.getHeaders().get(KafkaHeaders.ACKNOWLEDGMENT, Acknowledgment.class);
         if(acknowledgment != null) {
-            log.info("Acknowledgement is {} for message = {}", acknowledgment, consumerData);
+            doLogInfoWithMessageAndObject("Acknowledgement is {} for message = {}", acknowledgment, consumerData);
             acknowledgment.acknowledge();
         }
         else {
-            log.warn("Acknowledgement is null for message = {}", consumerData);
+            doLogWarnWithMessageAndObject("Acknowledgement is null for message = {}", consumerData);
         }
     }
 }
