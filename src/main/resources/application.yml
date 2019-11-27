@@ -84,6 +84,8 @@ spring:
               autoCommitOffset: true
               enableDlq: true
               dlqName: producer-consumer-topic-error
+      instance-count: 1
+      instance-index: 0
 
 logging:
   level:
