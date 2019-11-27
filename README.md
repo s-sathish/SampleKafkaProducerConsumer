@@ -36,7 +36,7 @@ $ bin/kafka-server-start.sh config/server2.properties
 
 Once zookeeper and kafka server are started, now run the application.
 For simple testing, use the following to initiate producer message.
-```
+```http request
 curl -X POST \
   http://localhost:8090/kpc/add/data \
   -H 'Content-Type: application/json' \
@@ -95,9 +95,22 @@ public ApplicationListener<ListenerContainerIdleEvent> wakingUpAllDLQConsumerAsP
 
 
 * `Instance count and Instance index`:
+
 These two params are very important when the application is deployed on multiple instances.
 
 ```bash
 Instance count = Number of instances the application is deployed
 Instance index = Will vary per instance. Starting from 0 to n -1 where n = InstanceCount
 ```
+
+
+* `Producer partitioning`;
+
+For data partitioning, the following properties needs to be set correctly.
+
+On Producer side:
+1. partitionKeyExpression - On what basis to decide the partition (Uses murmur hash internally for partitioning logic)
+2. partitionCount - Number of partitions on the topic
+
+On Consumer side:
+1. Just mark the consumer as ```partitioned = true```
