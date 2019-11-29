@@ -110,6 +110,8 @@ For data partitioning, the following properties needs to be set correctly.
 
 On Producer side:
 1. partitionKeyExpression - On what basis to decide the partition (Uses murmur hash internally for partitioning logic)
+
+   Use partitionSelectorName, partitionKeyExtractorName for custom key selector and partition selector. See Implementation in `CustomPartitioner` & `CustomPartitionKeyExtractorClass` class
 2. partitionCount - Number of partitions on the topic
 
 On Consumer side:

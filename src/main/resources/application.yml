@@ -9,20 +9,23 @@ spring:
       bindings:
         out-1:
           producer:
-            partitionKeyExpression: payload.payload
-            partitionCount: 2
+            partitionSelectorName: CustomPartitioner1
+            partitionKeyExtractorName: CustomPartitionKeyExtractorClass1
+            partitionCount: 3
           destination: producer-consumer-topic
           binder: kafka1
         dlq-out-1:
           producer:
-            partitionKeyExpression: payload.payload
-            partitionCount: 2
+            partitionSelectorName: CustomPartitioner2
+            partitionKeyExtractorName: CustomPartitionKeyExtractorClass1
+            partitionCount: 3
           destination: producer-consumer-topic-dlq-1
           binder: kafka2
         dlq-out-2:
           producer:
-            partitionKeyExpression: payload.payload
-            partitionCount: 2
+            partitionSelectorName: CustomPartitioner3
+            partitionKeyExtractorName: CustomPartitionKeyExtractorClass1
+            partitionCount: 3
           destination: producer-consumer-topic-dlq-2
           binder: kafka2
         in-1:
