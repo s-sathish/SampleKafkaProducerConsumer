@@ -1,7 +1,7 @@
-package com.sathish.KPC.consumer;
+package com.sathish.KPC.messaging.consumer;
 
-import com.sathish.KPC.data.ConsumerData;
-import com.sathish.KPC.streams.Stream;
+import com.sathish.KPC.dto.ConsumerDTO;
+import com.sathish.KPC.messaging.streams.Stream;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -18,25 +18,30 @@ import java.util.Collection;
 import java.util.Collections;
 
 import static com.sathish.KPC.utils.Constants.*;
-import static com.sathish.KPC.utils.LoggingUtils.*;
+import static com.sathish.KPC.utils.LoggingUtils.doLogInfoWithMessage;
+import static com.sathish.KPC.utils.LoggingUtils.doLogInfoWithMessageAndObject;
 
 @Component
 public class DLQConsumer {
 
     @StreamListener(value = Stream.DLQ_CONSUME_1)
-    public void messageConsumer1DLQ(@Valid Message<ConsumerData> consumerData, @Header(KafkaHeaders.CONSUMER) Consumer<?, ?> consumer) {
+    public void messageConsumer1DLQ(@Valid Message<ConsumerDTO> consumerData, @Header(KafkaHeaders.CONSUMER) Consumer<?, ?> consumer) throws Exception {
         doLogInfoWithMessageAndObject("DLQ 1 message consumer Info = {}", consumer);
         doLogInfoWithMessageAndObject("Received(From DLQ 1) message event in consumer, message = {}", consumerData);
 
+        // Comment the for loop and uncomment the below line to intentionally fail the message and push the pre configured DLQ
+        // throw new Exception("Intentional exception from messageConsumer1DLQ");
         for(int i = 0; i < DLQ_TOPIC_TOTAL_PARTITION; i++)
             consumer.pause(Collections.singleton(new TopicPartition(DLQ_TOPIC_NAME_1, i)));
     }
 
     @StreamListener(value = Stream.DLQ_CONSUME_2)
-    public void messageConsumer2DLQ(@Valid Message<ConsumerData> consumerData, @Header(KafkaHeaders.CONSUMER) Consumer<?, ?> consumer) {
+    public void messageConsumer2DLQ(@Valid Message<ConsumerDTO> consumerData, @Header(KafkaHeaders.CONSUMER) Consumer<?, ?> consumer) throws Exception {
         doLogInfoWithMessageAndObject("DLQ 2 message consumer Info = {}", consumer);
         doLogInfoWithMessageAndObject("Received(From DLQ 2) message event in consumer, message = {}", consumerData);
 
+        // Comment the for loop and uncomment the below line to intentionally fail the message and push the pre configured DLQ
+        // throw new Exception("Intentional exception from messageConsumer2DLQ");
         for(int i = 0; i < DLQ_TOPIC_TOTAL_PARTITION; i++)
             consumer.pause(Collections.singleton(new TopicPartition(DLQ_TOPIC_NAME_2, i)));
     }

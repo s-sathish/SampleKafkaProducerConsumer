@@ -1,4 +1,4 @@
-package com.sathish.KPC.producer;
+package com.sathish.KPC.messaging.producer.partitioner;
 
 import org.springframework.cloud.stream.binder.PartitionSelectorStrategy;
 import org.springframework.context.annotation.Bean;

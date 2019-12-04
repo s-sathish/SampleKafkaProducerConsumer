@@ -1,6 +1,6 @@
 package com.sathish.KPC.config;
 
-import com.sathish.KPC.streams.Stream;
+import com.sathish.KPC.messaging.streams.Stream;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.context.annotation.Configuration;
 

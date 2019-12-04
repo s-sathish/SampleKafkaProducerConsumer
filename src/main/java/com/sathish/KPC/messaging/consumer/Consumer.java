@@ -1,10 +1,10 @@
-package com.sathish.KPC.consumer;
+package com.sathish.KPC.messaging.consumer;
 
-import com.sathish.KPC.data.ConsumerData;
-import com.sathish.KPC.data.ProducerData;
-import com.sathish.KPC.producer.Producer;
+import com.sathish.KPC.dto.ConsumerDTO;
+import com.sathish.KPC.dto.ProducerDTO;
+import com.sathish.KPC.messaging.producer.Producer;
 import com.sathish.KPC.service.MessageProcessingService;
-import com.sathish.KPC.streams.Stream;
+import com.sathish.KPC.messaging.streams.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -27,7 +27,7 @@ public class Consumer {
     private Producer producer;
 
     @StreamListener(value = Stream.INPUT_1)
-    public void messageConsumer1(@Valid Message<ConsumerData> consumerData, @Header(KafkaHeaders.CONSUMER) org.apache.kafka.clients.consumer.Consumer<?, ?> consumer) {
+    public void messageConsumer1(@Valid Message<ConsumerDTO> consumerData, @Header(KafkaHeaders.CONSUMER) org.apache.kafka.clients.consumer.Consumer<?, ?> consumer) {
         doLogInfoWithMessageAndObject("Message Consumer 1 Info = {}", consumer);
         doLogInfoWithMessageAndObject("Received message event in consumer1, message = {}", consumerData);
 
@@ -47,7 +47,7 @@ public class Consumer {
     }
 
     @StreamListener(value = Stream.INPUT_2)
-    public void messageConsumer2(@Valid Message<ConsumerData> consumerData, @Header(KafkaHeaders.CONSUMER) org.apache.kafka.clients.consumer.Consumer<?, ?> consumer) {
+    public void messageConsumer2(@Valid Message<ConsumerDTO> consumerData, @Header(KafkaHeaders.CONSUMER) org.apache.kafka.clients.consumer.Consumer<?, ?> consumer) {
         doLogInfoWithMessageAndObject("Message Consumer 2 Info = {}", consumer);
         doLogInfoWithMessageAndObject("Received message event in consumer2, message = {}", consumerData);
         doLogInfoWithMessageAndObject("Processing message event from consumer2, message = {}", consumerData);
@@ -60,18 +60,18 @@ public class Consumer {
         return messageProcessingService.processMessage(payload);
     }
 
-    private void produceMessageToDLQ(ConsumerData consumerData) {
+    private void produceMessageToDLQ(ConsumerDTO consumerData) {
         producer.messageProducerToDLQ(prepareDlqProducerData(consumerData));
     }
 
-    private ProducerData prepareDlqProducerData(ConsumerData consumerData) {
-        ProducerData dlqProducerData = new ProducerData();
+    private ProducerDTO prepareDlqProducerData(ConsumerDTO consumerData) {
+        ProducerDTO dlqProducerData = new ProducerDTO();
         dlqProducerData.setPayload(consumerData.getPayload());
 
         return dlqProducerData;
     }
 
-    private void ackEvent(@Valid Message<ConsumerData> consumerData) {
+    private void ackEvent(@Valid Message<ConsumerDTO> consumerData) {
         Acknowledgment acknowledgment= consumerData.getHeaders().get(KafkaHeaders.ACKNOWLEDGMENT, Acknowledgment.class);
         if(acknowledgment != null) {
             doLogInfoWithMessageAndObject("Acknowledgement is {} for message = {}", acknowledgment, consumerData);

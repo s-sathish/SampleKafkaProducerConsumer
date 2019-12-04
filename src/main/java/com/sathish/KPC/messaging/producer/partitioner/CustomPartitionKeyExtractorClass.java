@@ -1,6 +1,6 @@
-package com.sathish.KPC.producer;
+package com.sathish.KPC.messaging.producer.partitioner;
 
-import com.sathish.KPC.data.ProducerData;
+import com.sathish.KPC.dto.ProducerDTO;
 import org.springframework.cloud.stream.binder.PartitionKeyExtractorStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.Message;
@@ -14,7 +14,7 @@ public class CustomPartitionKeyExtractorClass {
         return new PartitionKeyExtractorStrategy() {
             @Override
             public Object extractKey(Message<?> message) {
-                ProducerData producerData = (ProducerData) message.getPayload();
+                ProducerDTO producerData = (ProducerDTO) message.getPayload();
 
                 return producerData.getPayload();
             }

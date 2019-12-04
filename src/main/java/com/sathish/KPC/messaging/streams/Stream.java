@@ -1,4 +1,4 @@
-package com.sathish.KPC.streams;
+package com.sathish.KPC.messaging.streams;
 
 import org.springframework.cloud.stream.annotation.Input;
 import org.springframework.cloud.stream.annotation.Output;

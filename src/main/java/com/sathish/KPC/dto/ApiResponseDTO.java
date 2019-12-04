@@ -1,10 +1,10 @@
-package com.sathish.KPC.data;
+package com.sathish.KPC.dto;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class ResponseData {
+public class ApiResponseDTO {
     private String status;
 }

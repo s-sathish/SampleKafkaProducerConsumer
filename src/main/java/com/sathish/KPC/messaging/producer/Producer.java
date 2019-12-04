@@ -1,7 +1,7 @@
-package com.sathish.KPC.producer;
+package com.sathish.KPC.messaging.producer;
 
-import com.sathish.KPC.data.ProducerData;
-import com.sathish.KPC.streams.Stream;
+import com.sathish.KPC.dto.ProducerDTO;
+import com.sathish.KPC.messaging.streams.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.MessageBuilder;
@@ -17,10 +17,10 @@ public class Producer {
 
     /**
      * Produces message to the topic
-     * @param producerData Producer data
+     * @param producerData Producer dto
      * @throws RuntimeException RuntimeException
      */
-    public void messageProducer(ProducerData producerData) throws RuntimeException {
+    public void messageProducer(ProducerDTO producerData) throws RuntimeException {
         doLogInfoWithMessageAndObject("Producing message event to Kafka broker, message = {}", producerData);
 
         MessageChannel messageChannel = stream.outboundProducer1();
@@ -40,10 +40,10 @@ public class Producer {
 
     /**
      * Produces message to the DLQ topic
-     * @param producerData Producer data
+     * @param producerData Producer dto
      * @throws RuntimeException RuntimeException
      */
-    public void messageProducerToDLQ(ProducerData producerData) throws RuntimeException {
+    public void messageProducerToDLQ(ProducerDTO producerData) throws RuntimeException {
         doLogInfoWithMessageAndObject("Producing(To DLQ) message event to Kafka broker, message = {}", producerData);
 
         MessageChannel messageChannel1 = stream.outboundDLQProducer1();
@@ -63,7 +63,7 @@ public class Producer {
         }
     }
 
-    private boolean sendMessage(MessageChannel messageChannel, ProducerData producerData) {
+    private boolean sendMessage(MessageChannel messageChannel, ProducerDTO producerData) {
         return messageChannel.send(MessageBuilder.withPayload(producerData).build());
     }
 }
