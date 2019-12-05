@@ -1,5 +1,6 @@
 package com.sathish.KPC.messaging.producer;
 
+import com.sathish.KPC.dto.DlqProducerDTO;
 import com.sathish.KPC.dto.ProducerDTO;
 import com.sathish.KPC.messaging.streams.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +44,15 @@ public class Producer {
      * @param producerData Producer dto
      * @throws RuntimeException RuntimeException
      */
-    public void messageProducerToDLQ(ProducerDTO producerData) throws RuntimeException {
+    public void messageProducerToDLQ(DlqProducerDTO producerData) throws RuntimeException {
         doLogInfoWithMessageAndObject("Producing(To DLQ) message event to Kafka broker, message = {}", producerData);
 
         MessageChannel messageChannel1 = stream.outboundDLQProducer1();
         MessageChannel messageChannel2 = stream.outboundDLQProducer2();
 
         try {
-            boolean producerSuccess1 = sendMessage(messageChannel1, producerData);
-            boolean producerSuccess2 = sendMessage(messageChannel2, producerData);
+            boolean producerSuccess1 = sendMessageToDLQ(messageChannel1, producerData);
+            boolean producerSuccess2 = sendMessageToDLQ(messageChannel2, producerData);
 
             if(producerSuccess1 && producerSuccess2)
                 doLogInfoWithMessage("Sent(To DLQ) message event to Kafka broker");
@@ -64,6 +65,10 @@ public class Producer {
     }
 
     private boolean sendMessage(MessageChannel messageChannel, ProducerDTO producerData) {
+        return messageChannel.send(MessageBuilder.withPayload(producerData).build());
+    }
+
+    private boolean sendMessageToDLQ(MessageChannel messageChannel, DlqProducerDTO producerData) {
         return messageChannel.send(MessageBuilder.withPayload(producerData).build());
     }
 }

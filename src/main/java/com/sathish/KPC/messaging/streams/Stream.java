@@ -24,6 +24,8 @@ public interface Stream {
      */
     String DLQ_CONSUME_1 = "dlq-in-1";
     String DLQ_CONSUME_2 = "dlq-in-2";
+    String DLQ_CONSUME_3 = "dlq-in-3";
+    String DLQ_CONSUME_4 = "dlq-in-4";
 
     @Input(INPUT_1)
     SubscribableChannel inboundConsumer1();
@@ -45,4 +47,10 @@ public interface Stream {
 
     @Input(DLQ_CONSUME_2)
     SubscribableChannel inboundDLQConsumer2();
+
+    @Input(DLQ_CONSUME_3)
+    SubscribableChannel inboundDLQConsumer3();
+
+    @Input(DLQ_CONSUME_4)
+    SubscribableChannel inboundDLQConsumer4();
 }

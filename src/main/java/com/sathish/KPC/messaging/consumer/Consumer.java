@@ -1,21 +1,23 @@
 package com.sathish.KPC.messaging.consumer;
 
 import com.sathish.KPC.dto.ConsumerDTO;
-import com.sathish.KPC.dto.ProducerDTO;
+import com.sathish.KPC.dto.DlqProducerDTO;
 import com.sathish.KPC.messaging.producer.Producer;
-import com.sathish.KPC.service.MessageProcessingService;
 import com.sathish.KPC.messaging.streams.Stream;
+import com.sathish.KPC.service.MessageProcessingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
+import java.sql.Timestamp;
 
-import static com.sathish.KPC.utils.LoggingUtils.*;
+import static com.sathish.KPC.messaging.common.Utils.ackEvent;
+import static com.sathish.KPC.utils.LoggingUtils.doLogInfoWithMessageAndObject;
+import static com.sathish.KPC.utils.LoggingUtils.doLogWarnWithMessageAndObject;
 
 @Component
 public class Consumer {
@@ -64,21 +66,11 @@ public class Consumer {
         producer.messageProducerToDLQ(prepareDlqProducerData(consumerData));
     }
 
-    private ProducerDTO prepareDlqProducerData(ConsumerDTO consumerData) {
-        ProducerDTO dlqProducerData = new ProducerDTO();
+    private DlqProducerDTO prepareDlqProducerData(ConsumerDTO consumerData) {
+        DlqProducerDTO dlqProducerData = new DlqProducerDTO();
         dlqProducerData.setPayload(consumerData.getPayload());
+        dlqProducerData.setTimestamp(new Timestamp(System.currentTimeMillis()).getTime() + 60000);
 
         return dlqProducerData;
-    }
-
-    private void ackEvent(@Valid Message<ConsumerDTO> consumerData) {
-        Acknowledgment acknowledgment= consumerData.getHeaders().get(KafkaHeaders.ACKNOWLEDGMENT, Acknowledgment.class);
-        if(acknowledgment != null) {
-            doLogInfoWithMessageAndObject("Acknowledgement is {} for message = {}", acknowledgment, consumerData);
-            acknowledgment.acknowledge();
-        }
-        else {
-            doLogWarnWithMessageAndObject("Acknowledgement is null for message = {}", consumerData);
-        }
     }
 }
