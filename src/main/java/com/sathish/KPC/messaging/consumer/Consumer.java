@@ -16,6 +16,7 @@ import javax.validation.Valid;
 import java.sql.Timestamp;
 
 import static com.sathish.KPC.messaging.common.Utils.ackEvent;
+import static com.sathish.KPC.utils.Constants.DELAYED_PROCESSING_TIME;
 import static com.sathish.KPC.utils.LoggingUtils.doLogInfoWithMessageAndObject;
 import static com.sathish.KPC.utils.LoggingUtils.doLogWarnWithMessageAndObject;
 
@@ -48,16 +49,6 @@ public class Consumer {
         ackEvent(consumerData);
     }
 
-    @StreamListener(value = Stream.INPUT_2)
-    public void messageConsumer2(@Valid Message<ConsumerDTO> consumerData, @Header(KafkaHeaders.CONSUMER) org.apache.kafka.clients.consumer.Consumer<?, ?> consumer) {
-        doLogInfoWithMessageAndObject("Message Consumer 2 Info = {}", consumer);
-        doLogInfoWithMessageAndObject("Received message event in consumer2, message = {}", consumerData);
-        doLogInfoWithMessageAndObject("Processing message event from consumer2, message = {}", consumerData);
-        doLogInfoWithMessageAndObject("Finished processing message event from consumer2, message = {}", consumerData);
-
-        ackEvent(consumerData);
-    }
-
     private boolean processMessage(String payload) {
         return messageProcessingService.processMessage(payload);
     }
@@ -69,7 +60,8 @@ public class Consumer {
     private DlqProducerDTO prepareDlqProducerData(ConsumerDTO consumerData) {
         DlqProducerDTO dlqProducerData = new DlqProducerDTO();
         dlqProducerData.setPayload(consumerData.getPayload());
-        dlqProducerData.setTimestamp(new Timestamp(System.currentTimeMillis()).getTime() + 60000);
+        dlqProducerData.setTimestamp(new Timestamp(System.currentTimeMillis()).getTime() + DELAYED_PROCESSING_TIME);
+        dlqProducerData.setAttemptCount(1);
 
         return dlqProducerData;
     }

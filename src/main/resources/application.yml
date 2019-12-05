@@ -23,7 +23,7 @@ spring:
           binder: kafka2
         dlq-out-2:
           producer:
-            partitionSelectorName: CustomPartitioner3
+            partitionSelectorName: CustomPartitioner2
             partitionKeyExtractorName: CustomPartitionKeyExtractorClass2
             partitionCount: 3
           destination: producer-consumer-topic-dlq-2
@@ -34,12 +34,6 @@ spring:
           destination: producer-consumer-topic
           group: producer-consumer-group-1
           binder: kafka1
-        in-2:
-          consumer:
-            partitioned: true
-          destination: producer-consumer-topic
-          group: producer-consumer-group-2
-          binder: kafka1
         dlq-in-1:
           consumer:
             partitioned: true
@@ -49,19 +43,9 @@ spring:
         dlq-in-2:
           consumer:
             partitioned: true
-          destination: producer-consumer-topic-dlq-2
-          group: producer-consumer-group-dlq
-          binder: kafka2
-        dlq-in-3:
-          consumer:
-            partitioned: true
-          destination: producer-consumer-topic-dlq-1
-          group: producer-consumer-group-dlq-ex
-          binder: kafka2
-        dlq-in-4:
-          consumer:
-            partitioned: true
-          destination: producer-consumer-topic-dlq-2
+            multiplex: true
+            maxAttempts: 1
+          destination: producer-consumer-topic-dlq-2 # Multiplex is set to true, which means it can bind to multiple destinations
           group: producer-consumer-group-dlq-ex
           binder: kafka2
       binders:
@@ -84,9 +68,6 @@ spring:
           in-1:
             consumer:
               autoCommitOffset: false
-          in-2:
-            consumer:
-              autoCommitOffset: false
           dlq-in-1:
             consumer:
               idleEventInterval: 1800000
@@ -95,16 +76,9 @@ spring:
               dlqName: producer-consumer-topic-error
           dlq-in-2:
             consumer:
-              idleEventInterval: 3600000
-              autoCommitOffset: true
+              autoCommitOffset: false
               enableDlq: true
               dlqName: producer-consumer-topic-error
-          dlq-in-3:
-            consumer:
-              autoCommitOffset: false
-          dlq-in-4:
-            consumer:
-              autoCommitOffset: false
       instance-count: 1
       instance-index: 0
 

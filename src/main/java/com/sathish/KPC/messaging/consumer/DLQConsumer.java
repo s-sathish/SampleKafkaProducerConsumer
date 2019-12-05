@@ -35,17 +35,6 @@ public class DLQConsumer {
             consumer.pause(Collections.singleton(new TopicPartition(DLQ_TOPIC_NAME_1, i)));
     }
 
-    @StreamListener(value = Stream.DLQ_CONSUME_2)
-    public void messageConsumer2DLQ(@Valid Message<ConsumerDTO> consumerData, @Header(KafkaHeaders.CONSUMER) Consumer<?, ?> consumer) throws Exception {
-        doLogInfoWithMessageAndObject("DLQ 2 message consumer Info = {}", consumer);
-        doLogInfoWithMessageAndObject("Received(From DLQ 2) message event in consumer, message = {}", consumerData);
-
-        // Comment the for loop and uncomment the below line to intentionally fail the message and push the pre configured DLQ
-        // throw new Exception("Intentional exception from messageConsumer2DLQ");
-        for(int i = 0; i < DLQ_TOPIC_TOTAL_PARTITION; i++)
-            consumer.pause(Collections.singleton(new TopicPartition(DLQ_TOPIC_NAME_2, i)));
-    }
-
     @Bean
     public ApplicationListener<ListenerContainerIdleEvent> wakingUpAllDLQConsumerAsPerRetryLogic() {
         return event -> {

@@ -6,4 +6,5 @@ import lombok.Data;
 public class DlqProducerDTO {
     private String payload;
     private long timestamp;
+    private int attemptCount;
 }

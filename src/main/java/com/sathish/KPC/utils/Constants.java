@@ -25,4 +25,10 @@ public class Constants {
 
         return DLQ_TOPIC_PARTITION_MAP;
     }
+
+    /**
+     * Delayed processing properties
+     */
+    public final static Integer MAX_TOTAL_ATTEMPTS_FOR_DELAYED_PROCESSING = 4;
+    public final static Integer DELAYED_PROCESSING_TIME = 15000;
 }

@@ -64,6 +64,24 @@ public class Producer {
         }
     }
 
+    public void messageProducerToDLQEx(DlqProducerDTO producerData) throws RuntimeException {
+        doLogInfoWithMessageAndObject("Producing(To DLQEx) message event to Kafka broker, message = {}", producerData);
+
+        MessageChannel messageChannel = stream.outboundDLQProducer2();
+
+        try {
+            boolean producerSuccess = sendMessageToDLQ(messageChannel, producerData);
+
+            if(producerSuccess)
+                doLogInfoWithMessage("Sent(To DLQEx) message event to Kafka broker");
+            else {
+                doLogErrorWithMessageAndObject("Failed sending(To DLQEx) message event to Kafka broker, message = {}", producerData);
+            }
+        } catch (RuntimeException ex) {
+            doLogErrorWithMessageAndObject("Failed(RuntimeException) sending(To DLQEx) message event to Kafka broker, RuntimeException = {}", ex.getMessage());
+        }
+    }
+
     private boolean sendMessage(MessageChannel messageChannel, ProducerDTO producerData) {
         return messageChannel.send(MessageBuilder.withPayload(producerData).build());
     }
