@@ -13,10 +13,9 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
-import java.sql.Timestamp;
 
 import static com.sathish.KPC.messaging.common.Utils.ackEvent;
-import static com.sathish.KPC.utils.Constants.DELAYED_PROCESSING_TIME;
+import static com.sathish.KPC.utils.CommonUtils.getCurrentTimeStamp;
 import static com.sathish.KPC.utils.Constants.MAX_TOTAL_ATTEMPTS_FOR_DELAYED_PROCESSING;
 import static com.sathish.KPC.utils.LoggingUtils.doLogInfoWithMessageAndObject;
 import static java.lang.Thread.sleep;
@@ -38,32 +37,35 @@ public class DLQConsumerEx {
         try {
             boolean processingState = true;
             while (processingState) {
-                if(consumerData.getPayload().getTimestamp() <= new Timestamp(System.currentTimeMillis()).getTime()) {
+                if(consumerData.getPayload().getProcessAfter() <= getCurrentTimeStamp()) {
                     doLogInfoWithMessageAndObject("DLQEx 1 message consumer - Message time has arrived...");
                     processingState = false;
 
-                    boolean messageProcessingResult = messageProcessingService.processMessage(consumerData.getPayload().getPayload());
+                    boolean messageProcessingResult = processMessage(consumerData.getPayload().getPayload());
                     if(messageProcessingResult)
                         ackEvent(consumerData);
                     else
                         throw new Exception("Intentional exception being thrown in messageConsumer1DLQEx");
                 } else {
                     doLogInfoWithMessageAndObject("DLQEx 1 message consumer - Message time has not been elapsed yet...");
-                    sleep(consumerData.getPayload().getTimestamp() - new Timestamp(System.currentTimeMillis()).getTime());
+                    sleep(consumerData.getPayload().getProcessAfter() - getCurrentTimeStamp());
                 }
             }
         } catch (Exception ex) {
             doLogInfoWithMessageAndObject("Caught the thrown intentional exception...");
+            ackEvent(consumerData);
 
             int attemptCount = consumerData.getPayload().getAttemptCount();
-            if(attemptCount >= 1 && attemptCount <= MAX_TOTAL_ATTEMPTS_FOR_DELAYED_PROCESSING) {
-                ackEvent(consumerData);
+            if(++attemptCount <= MAX_TOTAL_ATTEMPTS_FOR_DELAYED_PROCESSING) {
                 produceMessageToDLQ(consumerData.getPayload(), attemptCount);
             } else {
-                ackEvent(consumerData);
                 throw new Exception("Exhausted max attempts for delayed processing. Will put the message to Pre configured DLQ...");
             }
         }
+    }
+
+    private boolean processMessage(String payload) {
+        return messageProcessingService.processMessage(payload);
     }
 
     private void produceMessageToDLQ(DlqConsumerDTO consumerData, int attemptCount) {
@@ -74,7 +76,8 @@ public class DLQConsumerEx {
         DlqProducerDTO dlqProducerData = new DlqProducerDTO();
 
         dlqProducerData.setPayload(consumerData.getPayload());
-        dlqProducerData.setTimestamp(new Timestamp(System.currentTimeMillis()).getTime() + DELAYED_PROCESSING_TIME * ++attemptCount);
+        dlqProducerData.setProcessAfter(getCurrentTimeStamp() + (consumerData.getPreviousTimeDelay() * attemptCount));
+        dlqProducerData.setPreviousTimeDelay(consumerData.getPreviousTimeDelay() * attemptCount);
         dlqProducerData.setAttemptCount(attemptCount);
 
         return dlqProducerData;

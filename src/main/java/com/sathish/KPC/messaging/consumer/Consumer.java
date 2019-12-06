@@ -13,9 +13,9 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import javax.validation.Valid;
-import java.sql.Timestamp;
 
 import static com.sathish.KPC.messaging.common.Utils.ackEvent;
+import static com.sathish.KPC.utils.CommonUtils.getCurrentTimeStamp;
 import static com.sathish.KPC.utils.Constants.DELAYED_PROCESSING_TIME;
 import static com.sathish.KPC.utils.LoggingUtils.doLogInfoWithMessageAndObject;
 import static com.sathish.KPC.utils.LoggingUtils.doLogWarnWithMessageAndObject;
@@ -60,7 +60,8 @@ public class Consumer {
     private DlqProducerDTO prepareDlqProducerData(ConsumerDTO consumerData) {
         DlqProducerDTO dlqProducerData = new DlqProducerDTO();
         dlqProducerData.setPayload(consumerData.getPayload());
-        dlqProducerData.setTimestamp(new Timestamp(System.currentTimeMillis()).getTime() + DELAYED_PROCESSING_TIME);
+        dlqProducerData.setProcessAfter(getCurrentTimeStamp() + DELAYED_PROCESSING_TIME);
+        dlqProducerData.setPreviousTimeDelay(DELAYED_PROCESSING_TIME);
         dlqProducerData.setAttemptCount(1);
 
         return dlqProducerData;

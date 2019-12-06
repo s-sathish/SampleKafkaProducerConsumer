@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class DlqProducerDTO {
     private String payload;
-    private long timestamp;
+    private long processAfter;
+    private int previousTimeDelay;
     private int attemptCount;
 }

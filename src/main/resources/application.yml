@@ -76,6 +76,8 @@ spring:
               dlqName: producer-consumer-topic-error
           dlq-in-2:
             consumer:
+              configuration:
+                max.poll.interval.ms: 720000
               autoCommitOffset: false
               enableDlq: true
               dlqName: producer-consumer-topic-error
